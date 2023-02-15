@@ -7,8 +7,8 @@ namespace Digital_models_3
         static int x_min, x_max, sum_fx = 0, max_fx, chromasome_count;
 
         static List<int> chromasome_x = new List<int>();
-        //static List<int> chromasome_binary = new List<int>();
-        static List<int> primary_population = new List<int>();
+        //static List<string> primary_population = new List<string>();
+        static List<string> chromasome_binary = new List<string>();
         static List<int> objective_function = new List<int>();
         static List<double> PiOP = new List<double>();
         static List<double> expected_copies = new List<double>();
@@ -39,7 +39,7 @@ namespace Digital_models_3
 
             Output();
 
-            FirstGeneration firstGeneration = new FirstGeneration();
+            //FirstGeneration firstGeneration = new FirstGeneration();
         }
 
         private static void RandomPoints(int seed, int lower, int upper)
@@ -53,13 +53,14 @@ namespace Digital_models_3
                 int x = randObj.Next(lower, upper);
 
                 chromasome_x.Add(x);
-                primary_population.Add(int.Parse(FuncTo2(x)));
+                chromasome_binary.Add(FuncTo2(x));
 
                 int y = x * x;
                 objective_function.Add(y);
 
                 sum_fx += y;
             }
+            EqualizingBinarity();
         }
 
         private static string FuncTo2(int x)
@@ -67,12 +68,36 @@ namespace Digital_models_3
             return Convert.ToString(x, 2);
         }
 
-        private static void Output()
+        private static void EqualizingBinarity()
         {
-            //Console.WriteLine("№ \t начальная популяция \t x \t f(x) \t значение fi(x)/sum[f(x)] \t ожидаемое число копий \t полученных копий");
+            int length_count = MaxLength(chromasome_binary);
             for (int i = 0; i < chromasome_count; i++)
             {
-                Console.WriteLine("{0} \t {1} \t {2} \t {3} \t {4:F2} \t {5:F2} \t {6:F0}", (i + 1), primary_population[i], chromasome_x[i], objective_function[i], PiOP[i], expected_copies[i], received_copies[i]);
+                while (chromasome_binary[i].Length < length_count)
+                {
+                    chromasome_binary[i] = chromasome_binary[i].Insert(0, "0");
+                }
+            }
+        }
+
+        static int MaxLength(List<string> a)
+        {
+            int n = a.Count;
+            int max = a[0].Length;
+            for (int i = 0; i < n; i++)
+            {
+                if (a[i].Length > max)
+                    max = a[i].Length;
+            }
+            return max;
+
+        }
+
+        private static void Output()
+        {
+            for (int i = 0; i < chromasome_count; i++)
+            {
+                Console.WriteLine("{0} \t {1} \t {2} \t {3} \t {4:F2} \t {5:F2} \t {6:F0}", (i + 1), chromasome_binary[i], chromasome_x[i], objective_function[i], PiOP[i], expected_copies[i], received_copies[i]);
             }
             Console.WriteLine("sum_fx: {0}", sum_fx);
             Console.WriteLine("max_fx: {0}", max_fx);
